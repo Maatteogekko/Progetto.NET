@@ -1,168 +1,168 @@
-CREATE DATABASE GestioneCorsi;
+CREATE DATABASE gestione_corsi;
 GO
-USE GestioneCorsi;
-CREATE TABLE Persone (
-    ID INT IDENTITY, 
-    NOME NVARCHAR(50) NOT NULL,
-    COGNOME NVARCHAR(50) NOT NULL,
-    DATA_DI_NASCITA DATE NOT NULL,
-    CF CHAR(16) NOT NULL,
-    SESSO CHAR(1) NOT NULL,
-    CITTA_RESIDENZA NVARCHAR(50) NOT NULL,
-    EMAIL NVARCHAR(60) NOT NULL,
-    TELEFONO BIGINT NOT NULL,
-    PARTITA_IVA NVARCHAR(11),
-    ID_AZIENDA INT,
-    RUOLO INT NOT NULL,
-    CONSTRAINT chk_ruolo CHECK (RUOLO IN ('Studente', 'Insegnante')),
-    CONSTRAINT chk_sesso CHECK (SESSO IN ('M', 'F')),
-    PRIMARY KEY(ID)
+USE gestione_corsi;
+CREATE TABLE persone (
+    id INT IDENTITY, 
+    name NVARCHAR(50) NOT NULL,
+    surname NVARCHAR(50) NOT NULL,
+    data_di_nascita DATE NOT NULL,
+    cf CHAR(16) NOT NULL,
+    sesso CHAR(1) NOT NULL,
+    citta_residenza NVARCHAR(50) NOT NULL,
+    email NVARCHAR(60) NOT NULL,
+    telefono BIGINT NOT NULL,
+    partita_iva NVARCHAR(11),
+    id_azienda INT,
+    ruolo INT NOT NULL,
+    CONSTRAINT chk_ruolo CHECK (ruolo IN ('Studente', 'Insegnante')),
+    CONSTRAINT chk_sesso CHECK (sesso IN ('M', 'F')),
+    PRIMARY KEY(id)
 );
-CREATE TABLE Livelli (
-    ID INT IDENTITY,
-    DESCRIZIONE NVARCHAR(255),
-    TIPO NVARCHAR(30) NOT NULL,
-    PRIMARY KEY(ID)
+CREATE TABLE livelli (
+    id INT IDENTITY,
+    descrizione NVARCHAR(255),
+    tipo NVARCHAR(30) NOT NULL,
+    PRIMARY KEY(id)
 );
-CREATE TABLE Aziende (
-    ID INT IDENTITY,
-    NOME NVARCHAR(50) NOT NULL,
-    CITTA NVARCHAR(30) NOT NULL,
-    INDIRIZZO NVARCHAR(50) NOT NULL,
-    CP NVARCHAR(7) NOT NULL,
-    TELEFONO NVARCHAR(10) NOT NULL,
-    EMAIL NVARCHAR(30) NOT NULL,
-    PARTITA_IVA NVARCHAR(11) NOT NULL,
-    PRIMARY KEY(ID)
+CREATE TABLE aziende (
+    id INT IDENTITY,
+    nome NVARCHAR(50) NOT NULL,
+    citta NVARCHAR(30) NOT NULL,
+    indirizzo NVARCHAR(50) NOT NULL,
+    cp NVARCHAR(7) NOT NULL,
+    telefono NVARCHAR(10) NOT NULL,
+    email NVARCHAR(30) NOT NULL,
+    partita_iva NVARCHAR(11) NOT NULL,
+    PRIMARY KEY(id)
 );
-CREATE TABLE Progetti (
-    ID INT IDENTITY,
-    TITOLO NVARCHAR(30) NOT NULL,
-    DESCRIZIONE NVARCHAR(255) NOT NULL,
-    ID_AZIENDA INT,
-    PRIMARY KEY(ID),
-    FOREIGN KEY(ID_AZIENDA) REFERENCES Aziende(ID)
+CREATE TABLE progetti (
+    id INT IDENTITY,
+    titolo NVARCHAR(30) NOT NULL,
+    descrizione NVARCHAR(255) NOT NULL,
+    id_azienda INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(id_azienda) REFERENCES aziende(id)
 );
-CREATE TABLE Categorie (
-    ID INT IDENTITY,
-    TIPO NVARCHAR(20) NOT NULL,
-    DESCRIZIONE NVARCHAR(255),
-    CONSTRAINT chk_tipo CHECK (TIPO IN ('Introduttivo', 'Intermedio', 'Avanzato', 'Guru')),
-    PRIMARY KEY(ID)
+CREATE TABLE categorie (
+    id INT IDENTITY,
+    tipo NVARCHAR(20) NOT NULL,
+    descrizione NVARCHAR(255),
+    CONSTRAINT chk_tipo CHECK (tipo IN ('Introduttivo', 'Intermedio', 'Avanzato', 'Guru')),
+    PRIMARY KEY(id)
 );
-CREATE TABLE Corsi (
-    ID INT IDENTITY,
-    TITOLO NVARCHAR(50) NOT NULL,
-    DESCRIZIONE NVARCHAR(255) NOT NULL,
-    AMMONTARE_ORE INT NOT NULL,
-    COSTO_DI_RIFERIMENTO MONEY NOT NULL,
-    ID_LIVELLO INT,
-    ID_PROGETTO INT,
-    ID_CATEGORIA INT,
-    PRIMARY KEY(ID),
-    FOREIGN KEY(ID_LIVELLO) REFERENCES Livelli(ID),
-    FOREIGN KEY(ID_PROGETTO) REFERENCES Progetti(ID),
-    FOREIGN KEY(ID_CATEGORIA) REFERENCES Categorie(ID),
+CREATE TABLE corsi (
+    id INT IDENTITY,
+    titolo NVARCHAR(50) NOT NULL,
+    descrizione NVARCHAR(255) NOT NULL,
+    ammontare_ore INT NOT NULL,
+    costo_di_riferimento MONEY NOT NULL,
+    id_livello INT,
+    id_progetto INT,
+    id_categoria INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(id_livello) REFERENCES livelli(id),
+    FOREIGN KEY(id_progetto) REFERENCES progetti(id),
+    FOREIGN KEY(id_categoria) REFERENCES categorie(id),
 );
-CREATE TABLE Aule (
-    ID INT IDENTITY,
-    NOME NVARCHAR(50) NOT NULL,
-    CAPACITA_MAX INT NOT NULL,
-    FISICA_VIRTUALE BIT NOT NULL,
-    COMPUTERIZZATA BIT,
-    PROIETTORE BIT,
-    PRIMARY KEY(ID)
+CREATE TABLE aule (
+    id INT IDENTITY,
+    nome NVARCHAR(50) NOT NULL,
+    capacita_max INT NOT NULL,
+    fisica_virtuale BIT NOT NULL,
+    computerizzata BIT,
+    proiettore BIT,
+    PRIMARY KEY(id)
 );
-CREATE TABLE Enti_Finanziatori (
-    ID INT IDENTITY,
-    TITOLO NVARCHAR(50) NOT NULL,
-    DESCRIZIONE NVARCHAR(255),
-    PRIMARY KEY(ID)
+CREATE TABLE enti_finanziatori (
+    id INT IDENTITY,
+    titolo NVARCHAR(50) NOT NULL,
+    descrizione NVARCHAR(255),
+    PRIMARY KEY(id)
 );
-CREATE TABLE Edizioni (
-    ID INT IDENTITY,
-    CODICE_EDIZIONE NVARCHAR(20) NOT NULL,
-    DATA_INIZIO DATE NOT NULL,
-    DATA_FINE DATE NOT NULL,
-    PREZZO_FINALE MONEY NOT NULL,
-    NUMERO_MAX_STUDENTI INT NOT NULL,
-    IN_PRESENZA BIT NOT NULL,
-    ID_AULA INT,
-    ID_CORSO INT,
-    ID_FINANZIATORE INT,
-    PRIMARY KEY(ID),
-    FOREIGN KEY(ID_AULA) REFERENCES Aule(ID),
-    FOREIGN KEY(ID_CORSO) REFERENCES Corsi(ID),
-    FOREIGN KEY(ID_FINANZIATORE) REFERENCES Enti_Finanziatori(ID)
+CREATE TABLE edizioni (
+    id INT IDENTITY,
+    codice_edizione NVARCHAR(20) NOT NULL,
+    data_inizio DATE NOT NULL,
+    data_fine DATE NOT NULL,
+    prezzo_finale MONEY NOT NULL,
+    numero_max_studenti INT NOT NULL,
+    in_presenza BIT NOT NULL,
+    id_aula INT,
+    id_corso INT,
+    id_finanziatore INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(id_aula) REFERENCES aule(id),
+    FOREIGN KEY(id_corso) REFERENCES Corsi(id),
+    FOREIGN KEY(id_finanziatore) REFERENCES enti_finanziatori(id)
 );
-CREATE TABLE Moduli (
-    ID INT IDENTITY,
-    NOME NVARCHAR(50) NOT NULL,
-    AMMONTARE_ORE INT NOT NULL,
-    DESCRIZIONE NVARCHAR(255),
-    ID_DOCENTE INT,
-    ID_EDIZIONE INT,
-    FOREIGN KEY (ID_DOCENTE) REFERENCES Persone(ID),
-    FOREIGN KEY (ID_EDIZIONE) REFERENCES Edizioni(ID),
-    PRIMARY KEY(ID)
+CREATE TABLE moduli (
+    id INT IDENTITY,
+    nome NVARCHAR(50) NOT NULL,
+    ammontare_ore INT NOT NULL,
+    descrizione NVARCHAR(255),
+    id_docente INT,
+    id_edizione INT,
+    FOREIGN KEY (id_docente) REFERENCES persone(id),
+    FOREIGN KEY (id_edizione) REFERENCES edizioni(id),
+    PRIMARY KEY(id)
 );
-CREATE TABLE Lezioni (
-    ID INT IDENTITY,
-    ORA_INIZIO TIME NOT NULL,
-    ORA_FINE TIME NOT NULL,
-    ID_AULA INT,
-    ID_DOCENTE INT,
-    ID_MODULO INT,
-    DESCRIZIONE NVARCHAR(255),
-    FOREIGN KEY(ID_AULA) REFERENCES Aule(ID),
-    FOREIGN KEY(ID_DOCENTE) REFERENCES Persone(ID),
-    FOREIGN KEY(ID_MODULO) REFERENCES Moduli(ID),
-    PRIMARY KEY(ID)
+CREATE TABLE lezioni (
+    id INT IDENTITY,
+    ora_inizio TIME NOT NULL,
+    ora_fine TIME NOT NULL,
+    id_aula INT,
+    id_docente INT,
+    id_modulo INT,
+    descrizione NVARCHAR(255),
+    FOREIGN KEY(id_aula) REFERENCES aule(id),
+    FOREIGN KEY(id_docente) REFERENCES persone(id),
+    FOREIGN KEY(id_modulo) REFERENCES moduli(id),
+    PRIMARY KEY(id)
 );
-CREATE TABLE Iscrizioni (
-    ID INT IDENTITY,
-    DATA_ISCRIZIONE DATE NOT NULL,
-    VALUTAZIONE_CORSO NVARCHAR(255),
-    VOTO_CORSO INT NOT NULL,
-    VALUTAZIONE_STUDENTE INT NOT NULL,
-    PAGATA BIT NOT NULL,
-    ID_STUDENTE INT,
-    ID_EDIZIONE INT,
-    CONSTRAINT chk_voto CHECK (VOTO_CORSO >=0 AND VOTO_CORSO <=10),
-    CONSTRAINT chk_valutazione_studente CHECK (VALUTAZIONE_STUDENTE >=0 AND VALUTAZIONE_STUDENTE <=10),
-    PRIMARY KEY(ID),
-    FOREIGN KEY(ID_STUDENTE) REFERENCES Persone(ID),
-    FOREIGN KEY(ID_EDIZIONE) REFERENCES Edizioni(ID),
+CREATE TABLE iscrizioni (
+    id INT IDENTITY,
+    data_iscrizione DATE NOT NULL,
+    valutazione_corso NVARCHAR(255),
+    voto_corso INT NOT NULL,
+    valutazione_studente INT NOT NULL,
+    pagata BIT NOT NULL,
+    id_studente INT,
+    id_edizione INT,
+    CONSTRAINT chk_voto CHECK (voto_corso >=0 AND voto_corso <=10),
+    CONSTRAINT chk_valutazione_studente CHECK (valutazione_studente >=0 AND valutazione_studente <=10),
+    PRIMARY KEY(id),
+    FOREIGN KEY(id_studente) REFERENCES persone(id),
+    FOREIGN KEY(id_edizione) REFERENCES edizioni(id),
 );
-CREATE TABLE Skills (
-    ID INT IDENTITY,
-    NOME NVARCHAR(50) NOT NULL,
-    DESCRIZIONE NVARCHAR(255),
-    ID_CATEGORIA INT,
-    PRIMARY KEY(ID),
-    FOREIGN KEY(ID_CATEGORIA) REFERENCES Categorie(ID),
+CREATE TABLE skills (
+    id INT IDENTITY,
+    nome NVARCHAR(50) NOT NULL,
+    descrizione NVARCHAR(255),
+    id_categoria INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY(id_categoria) REFERENCES categorie(id),
 );
-CREATE TABLE Competenze (
-    ID INT IDENTITY,
-    NOTE NVARCHAR(255),
-    ID_PERSONA INT,
-    ID_SKILL INT,
-    ID_LIVELLO INT,
-    FOREIGN KEY(ID_PERSONA) REFERENCES Persone(ID),
-    FOREIGN KEY(ID_SKILL) REFERENCES Skills(ID),
-    FOREIGN KEY(ID_LIVELLO) REFERENCES Livelli(ID),
-    PRIMARY KEY(ID)
+CREATE TABLE competenze (
+    id INT IDENTITY,
+    note NVARCHAR(255),
+    id_persona INT,
+    id_skill INT,
+    id_livello INT,
+    FOREIGN KEY(id_persona) REFERENCES persone(id),
+    FOREIGN KEY(id_skill) REFERENCES skills(id),
+    FOREIGN KEY(id_livello) REFERENCES livelli(id),
+    PRIMARY KEY(id)
 );
-CREATE TABLE Presenze (
-    ID INT IDENTITY,
-    ORA_INIZIO TIME NOT NULL,
-    ORA_FINE TIME NOT NULL,
-    ID_STUDENTE INT,
-    ID_LEZIONE INT,
-    NOTA NVARCHAR(255),
-    PRIMARY KEY(ID),
-    FOREIGN KEY(ID_LEZIONE) REFERENCES Lezioni(ID),
-    FOREIGN KEY(ID_STUDENTE) REFERENCES Persone(ID),
+CREATE TABLE presenze (
+    id INT IDENTITY,
+    ora_inizio TIME NOT NULL,
+    ora_fine TIME NOT NULL,
+    id_studente INT,
+    id_lezione INT,
+    nota NVARCHAR(255),
+    PRIMARY KEY(id),
+    FOREIGN KEY(id_lezione) REFERENCES lezioni(id),
+    FOREIGN KEY(id_studente) REFERENCES persone(id),
 );
 
 
