@@ -1,5 +1,6 @@
 CREATE DATABASE GestioneCorsi;
 GO
+USE GestioneCorsi;
 CREATE TABLE Persone (
     ID INT, 
     NOME VARCHAR(50) NOT NULL,
