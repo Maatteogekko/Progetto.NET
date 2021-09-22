@@ -1,8 +1,24 @@
+USE master;
+
+-- Drop database
+IF DB_ID('gestione_corsi') IS NOT NULL DROP DATABASE gestione_corsi;
+
+-- If database could not be created due to open connections, abort
+IF @@ERROR = 3702 
+   RAISERROR('Database cannot be dropped because there are still open connections.', 127, 127) WITH NOWAIT, LOG;
+
+-- Create database
 CREATE DATABASE gestione_corsi;
 GO
+
+-- Use database
 USE gestione_corsi;
-CREATE TABLE persone (
-    id INT IDENTITY, 
+GO
+
+-- create tables
+CREATE TABLE persone
+(
+    id INT IDENTITY,
     name NVARCHAR(50) NOT NULL,
     surname NVARCHAR(50) NOT NULL,
     data_di_nascita DATE NOT NULL,
@@ -18,13 +34,17 @@ CREATE TABLE persone (
     CONSTRAINT chk_sesso CHECK (sesso IN ('M', 'F')),
     PRIMARY KEY(id)
 );
-CREATE TABLE livelli (
+
+CREATE TABLE livelli
+(
     id INT IDENTITY,
     descrizione NVARCHAR(255),
     tipo NVARCHAR(30) NOT NULL,
     PRIMARY KEY(id)
 );
-CREATE TABLE aziende (
+
+CREATE TABLE aziende
+(
     id INT IDENTITY,
     nome NVARCHAR(50) NOT NULL,
     citta NVARCHAR(30) NOT NULL,
@@ -35,7 +55,9 @@ CREATE TABLE aziende (
     partita_iva NVARCHAR(11) NOT NULL,
     PRIMARY KEY(id)
 );
-CREATE TABLE progetti (
+
+CREATE TABLE progetti
+(
     id INT IDENTITY,
     titolo NVARCHAR(30) NOT NULL,
     descrizione NVARCHAR(255) NOT NULL,
@@ -43,14 +65,18 @@ CREATE TABLE progetti (
     PRIMARY KEY(id),
     FOREIGN KEY(id_azienda) REFERENCES aziende(id)
 );
-CREATE TABLE categorie (
+
+CREATE TABLE categorie
+(
     id INT IDENTITY,
     tipo NVARCHAR(20) NOT NULL,
     descrizione NVARCHAR(255),
     CONSTRAINT chk_tipo CHECK (tipo IN ('Introduttivo', 'Intermedio', 'Avanzato', 'Guru')),
     PRIMARY KEY(id)
 );
-CREATE TABLE corsi (
+
+CREATE TABLE corsi
+(
     id INT IDENTITY,
     titolo NVARCHAR(50) NOT NULL,
     descrizione NVARCHAR(255) NOT NULL,
@@ -64,7 +90,9 @@ CREATE TABLE corsi (
     FOREIGN KEY(id_progetto) REFERENCES progetti(id),
     FOREIGN KEY(id_categoria) REFERENCES categorie(id),
 );
-CREATE TABLE aule (
+
+CREATE TABLE aule
+(
     id INT IDENTITY,
     nome NVARCHAR(50) NOT NULL,
     capacita_max INT NOT NULL,
@@ -73,13 +101,17 @@ CREATE TABLE aule (
     proiettore BIT,
     PRIMARY KEY(id)
 );
-CREATE TABLE enti_finanziatori (
+
+CREATE TABLE enti_finanziatori
+(
     id INT IDENTITY,
     titolo NVARCHAR(50) NOT NULL,
     descrizione NVARCHAR(255),
     PRIMARY KEY(id)
 );
-CREATE TABLE edizioni (
+
+CREATE TABLE edizioni
+(
     id INT IDENTITY,
     codice_edizione NVARCHAR(20) NOT NULL,
     data_inizio DATE NOT NULL,
@@ -95,7 +127,9 @@ CREATE TABLE edizioni (
     FOREIGN KEY(id_corso) REFERENCES Corsi(id),
     FOREIGN KEY(id_finanziatore) REFERENCES enti_finanziatori(id)
 );
-CREATE TABLE moduli (
+
+CREATE TABLE moduli
+(
     id INT IDENTITY,
     nome NVARCHAR(50) NOT NULL,
     ammontare_ore INT NOT NULL,
@@ -106,7 +140,9 @@ CREATE TABLE moduli (
     FOREIGN KEY (id_edizione) REFERENCES edizioni(id),
     PRIMARY KEY(id)
 );
-CREATE TABLE lezioni (
+
+CREATE TABLE lezioni
+(
     id INT IDENTITY,
     ora_inizio TIME NOT NULL,
     ora_fine TIME NOT NULL,
@@ -119,7 +155,9 @@ CREATE TABLE lezioni (
     FOREIGN KEY(id_modulo) REFERENCES moduli(id),
     PRIMARY KEY(id)
 );
-CREATE TABLE iscrizioni (
+
+CREATE TABLE iscrizioni
+(
     id INT IDENTITY,
     data_iscrizione DATE NOT NULL,
     valutazione_corso NVARCHAR(255),
@@ -134,7 +172,9 @@ CREATE TABLE iscrizioni (
     FOREIGN KEY(id_studente) REFERENCES persone(id),
     FOREIGN KEY(id_edizione) REFERENCES edizioni(id),
 );
-CREATE TABLE skills (
+
+CREATE TABLE skills
+(
     id INT IDENTITY,
     nome NVARCHAR(50) NOT NULL,
     descrizione NVARCHAR(255),
@@ -142,7 +182,9 @@ CREATE TABLE skills (
     PRIMARY KEY(id),
     FOREIGN KEY(id_categoria) REFERENCES categorie(id),
 );
-CREATE TABLE competenze (
+
+CREATE TABLE competenze
+(
     id INT IDENTITY,
     note NVARCHAR(255),
     id_persona INT,
@@ -153,7 +195,9 @@ CREATE TABLE competenze (
     FOREIGN KEY(id_livello) REFERENCES livelli(id),
     PRIMARY KEY(id)
 );
-CREATE TABLE presenze (
+
+CREATE TABLE presenze
+(
     id INT IDENTITY,
     ora_inizio TIME NOT NULL,
     ora_fine TIME NOT NULL,
@@ -164,6 +208,3 @@ CREATE TABLE presenze (
     FOREIGN KEY(id_lezione) REFERENCES lezioni(id),
     FOREIGN KEY(id_studente) REFERENCES persone(id),
 );
-
-
-
