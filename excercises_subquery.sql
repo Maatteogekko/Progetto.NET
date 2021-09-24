@@ -6,8 +6,10 @@ USE TSQLFundamentals2008
 -- Tables involved: TSQLFundamentals2008 database, Orders table
 SELECT orderid, orderdate, custid, empid
 FROM Sales.Orders
-WHERE orderdate = (SELECT MAX(orderdate)
-                    FROM Sales.Orders);
+WHERE orderdate = (
+    SELECT MAX(orderdate)
+    FROM Sales.Orders
+);
 
 
 -- 2 (Optional, Advanced)
@@ -36,6 +38,20 @@ WHERE custid IN (
 )
 ORDER BY custid;
 
+-- SELECT custid, orderid, orderdate, empid
+-- FROM Sales.Orders AS O
+-- WHERE O.custid IN (
+--     SELECT custid
+--     FROM Sales.Orders AS O
+--     GROUP BY O.custid
+--     HAVING COUNT(*) = (
+--         SELECT TOP(1) COUNT(*) AS numordini
+--         FROM Sales.Orders AS O2
+--         GROUP BY O2.custid
+--         ORDER BY COUNT(*) DESC
+--     )
+-- )
+
 
 -- 3
 -- Write a query that returns employees
@@ -54,13 +70,12 @@ WHERE empid NOT IN (
 -- Write a query that returns
 -- countries where there are customers but not employees
 -- Tables involved: TSQLFundamentals2008 database, Customers and Employees tables
-SELECT country
+SELECT DISTINCT country
 FROM Sales.Customers
 WHERE country NOT IN (
     SELECT E.country
     FROM HR.Employees as E
-)
-GROUP BY country;
+);
 
 
 -- 5
@@ -97,6 +112,18 @@ WHERE C.custid IN (
     WHERE YEAR(O.orderdate) = '2008'
 )
 
+-- SELECT C.custid, C.companyname
+-- FROM Sales.Customers AS C
+-- WHERE EXISTS (
+--     SELECT * 
+--     FROM Sales.Orders AS O
+--     WHERE O.custid = C.custid AND YEAR(O.orderdate) = '2007'
+-- ) AND NOT EXISTS (
+--     SELECT * 
+--     FROM Sales.Orders AS O
+--     WHERE O.custid = C.custid AND YEAR(O.orderdate) = '2008'
+-- )
+
 
 -- 7 (Optional, Advanced)
 -- Write a query that returns customers
@@ -115,11 +142,30 @@ WHERE custid IN (
     )
 );
 
+-- SELECT custid, companyname
+-- FROM Sales.Customers AS C
+-- WHERE EXISTS (
+--     SELECT *
+--     FROM Sales.Orders AS O
+--     WHERE O.custid = C.custid AND EXISTS (
+--         SELECT *
+--         FROM sALES.OrderDetails AS OD
+--         WHERE OD.orderid = O.orderid AND OD.productid = 12
+--     )
+-- )
 
 -- 8 (Optional, Advanced)
 -- Write a query that calculates a running total qty
 -- for each customer and month
 -- Tables involved: TSQLFundamentals2008 database, Sales.CustOrders view
-SELECT custid, ordermonth, qty, SUM(qty) OVER (PARTITION BY custid ORDER BY ordermonth) AS runqty
+SELECT custid, ordermonth, qty, SUM(qty) OVER(PARTITION BY custid ORDER BY ordermonth) AS runqty
 FROM Sales.CustOrders
-ORDER BY custid
+ORDER BY custid, ordermonth
+
+-- SELECT custid, ordermonth, qty, (
+--     SELECT SUM(CO2.qty)
+--     FROM Sales.CustOrders AS CO2
+--     WHERE CO2.custid = CO1.custid AND CO2.ordermonth <= CO1.ordermonth
+-- ) AS runqty
+-- FROM Sales.CustOrders AS CO1
+-- ORDER BY custid, ordermonth
