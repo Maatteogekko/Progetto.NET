@@ -16,32 +16,6 @@ USE gestione_corsi;
 GO
 
 -- create tables
-CREATE TABLE persone
-(
-    id INT IDENTITY,
-    name NVARCHAR(50) NOT NULL,
-    surname NVARCHAR(50) NOT NULL,
-    data_di_nascita DATE NOT NULL,
-    cf CHAR(16) NOT NULL,
-    sesso CHAR(1) NOT NULL,
-    citta_residenza NVARCHAR(50) NOT NULL,
-    email NVARCHAR(60) NOT NULL,
-    telefono BIGINT NOT NULL,
-    partita_iva NVARCHAR(11),
-    id_azienda INT,
-    ruolo INT NOT NULL,
-    CONSTRAINT chk_ruolo CHECK (ruolo IN ('Studente', 'Insegnante')),
-    CONSTRAINT chk_sesso CHECK (sesso IN ('M', 'F')),
-    PRIMARY KEY(id)
-);
-
-CREATE TABLE livelli
-(
-    id INT IDENTITY,
-    descrizione NVARCHAR(255),
-    tipo NVARCHAR(30) NOT NULL,
-    PRIMARY KEY(id)
-);
 
 CREATE TABLE aziende
 (
@@ -54,6 +28,35 @@ CREATE TABLE aziende
     email NVARCHAR(30) NOT NULL,
     partita_iva NVARCHAR(11) NOT NULL,
     PRIMARY KEY(id)
+);
+
+CREATE TABLE persone
+(
+    id INT IDENTITY,
+    name NVARCHAR(50) NOT NULL,
+    surname NVARCHAR(50) NOT NULL,
+    data_di_nascita DATE NOT NULL,
+    cf CHAR(16) NOT NULL,
+    sesso CHAR(1) NOT NULL,
+    citta_residenza NVARCHAR(50) NOT NULL,
+    email NVARCHAR(60) NOT NULL,
+    telefono BIGINT NOT NULL,
+    partita_iva NVARCHAR(11),
+    ruolo NVARCHAR(10) NOT NULL,
+    id_azienda INT,
+    CONSTRAINT chk_ruolo CHECK (ruolo IN ('Studente', 'Insegnante')),
+    CONSTRAINT chk_sesso CHECK (sesso IN ('M', 'F')),
+    FOREIGN KEY(id_azienda) REFERENCES aziende(id),
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE livelli
+(
+    id INT IDENTITY,
+    descrizione NVARCHAR(255),
+    tipo NVARCHAR(30) NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT chk_tipo_level CHECK (tipo IN ('Introduttivo', 'Intermedio', 'Avanzato', 'Guru')),
 );
 
 CREATE TABLE progetti
@@ -71,7 +74,7 @@ CREATE TABLE categorie
     id INT IDENTITY,
     tipo NVARCHAR(20) NOT NULL,
     descrizione NVARCHAR(255),
-    CONSTRAINT chk_tipo CHECK (tipo IN ('Introduttivo', 'Intermedio', 'Avanzato', 'Guru')),
+    CONSTRAINT chk_tipo CHECK (tipo IN ('Grafica', 'SviluppoSoftware', 'Lingue', 'Sistemistica')),
     PRIMARY KEY(id)
 );
 
@@ -201,9 +204,9 @@ CREATE TABLE presenze
     id INT IDENTITY,
     ora_inizio TIME NOT NULL,
     ora_fine TIME NOT NULL,
+    nota NVARCHAR(255),
     id_studente INT,
     id_lezione INT,
-    nota NVARCHAR(255),
     PRIMARY KEY(id),
     FOREIGN KEY(id_lezione) REFERENCES lezioni(id),
     FOREIGN KEY(id_studente) REFERENCES persone(id),
